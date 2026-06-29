@@ -1,0 +1,130 @@
+﻿@page "/apartment/{Id:int}"
+@inject ApiService Api
+@inject AuthService Auth
+@inject NavigationManager Nav
+@using ApartmentBooking.Services
+@using ApartmentBooking.Models
+
+@if (apartment == null)
+{
+    <p class="loading">Загрузка...</p>
+}
+else
+{
+    <div class="detail-page">
+        <div class="detail-image">
+            @if (apartment.Images.Count > 0)
+            {
+                <div class="slider">
+                    <img src="@apartment.Images[currentImage]" alt="@apartment.Title"
+                         class="slider-img" onerror="this.src=''" />
+
+                    @if (apartment.Images.Count > 1)
+                    {
+                        <button class="slider-btn prev" @onclick="PrevImage">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="3">
+                                <polyline points="15,18 9,12 15,6"></polyline>
+                            </svg>
+                        </button>
+                        <button class="slider-btn next" @onclick="NextImage">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="3">
+                                <polyline points="9,18 15,12 9,6"></polyline>
+                            </svg>
+                        </button>
+
+                        <span class="slider-counter">
+                            @(currentImage + 1) / @apartment.Images.Count
+                        </span>
+
+                        <div class="slider-dots">
+                            @for (int i = 0; i < apartment.Images.Count; i++)
+                            {
+                                var idx = i;
+                                <span class="dot @(idx == currentImage ? "active" : "")"
+                                      @onclick="() => currentImage = idx"></span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-image-large">🏢</div>
+            }
+        </div>
+        <div class="detail-info">
+            <h1>@apartment.Title</h1>
+            <p class="location">📍 @apartment.City, @apartment.Address</p>
+            <p class="price-big">@apartment.PricePerNight Br/ночь</p>
+            <div class="detail-meta">
+                <span>🛏 @apartment.Rooms комн.</span>
+                <span>👥 до @apartment.MaxGuests гостей</span>
+                <span>👤 Хозяин: @apartment.OwnerName</span>
+            </div>
+            <p class="description">@apartment.Description</p>
+
+            @if (Auth.IsLoggedIn && Auth.UserId != apartment.OwnerId)
+            {
+                <div class="booking-form">
+                    <h3>Забронировать</h3>
+                    <label>Дата заезда:</label>
+                    <input type="date" @bind="checkIn" class="input" />
+                    <label>Дата выезда:</label>
+                    <input type="date" @bind="checkOut" class="input" />
+
+                    @if (checkIn.HasValue && checkOut.HasValue && checkOut > checkIn)
+                    {
+                        var nights = (checkOut.Value - checkIn.Value).Days;
+                        <p class="total">Итого: @(nights * apartment.PricePerNight) Br за @nights ночей</p>
+                    }
+
+                    @if (!string.IsNullOrEmpty(error))
+                    {
+                        <p class="error">@error</p>
+                    }
+
+                    <button @onclick="Book" class="btn-primary" disabled="@booking">
+                        @(booking ? "Бронирование..." : "Забронировать")
+                    </button>
+                </div>
+            }
+            else if (!Auth.IsLoggedIn)
+            {
+                <p><a href="/login">Войдите</a>, чтобы забронировать</p>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private ApartmentDto? apartment;
+    private DateTime? checkIn = DateTime.Today.AddDays(1);
+    private DateTime? checkOut = DateTime.Today.AddDays(3);
+    private string error = "";
+    private bool booking = false;
+    private int currentImage = 0;
+    private void PrevImage() =>
+        currentImage = currentImage == 0 ? apartment!.Images.Count - 1 : currentImage - 1;
+    private void NextImage() =>
+        currentImage = (currentImage + 1) % apartment!.Images.Count;
+    protected override async Task OnInitializedAsync()
+    {
+        apartment = await Api.GetApartmentAsync(Id);
+    }
+
+    private async Task Book()
+    {
+        if (!checkIn.HasValue || !checkOut.HasValue) return;
+        booking = true;
+        error = "";
+        var (success, err) = await Api.CreateBookingAsync(Id, checkIn.Value, checkOut.Value);
+        if (success)
+            Nav.NavigateTo("/my-bookings");
+        else
+        {
+            error = err;
+            booking = false;
+        }
+    }
+}

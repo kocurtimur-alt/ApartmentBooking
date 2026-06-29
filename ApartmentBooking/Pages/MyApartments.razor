@@ -1,0 +1,89 @@
+﻿@page "/my-apartments"
+@inject ApiService Api
+@inject AuthService Auth
+@inject NavigationManager Nav
+@using ApartmentBooking.Services
+@using ApartmentBooking.Models
+
+<div class="page-header">
+    <h2>Мои квартиры</h2>
+    <a href="/add-apartment" class="btn-primary">+ Добавить квартиру</a>
+</div>
+
+@if (apartments.Count == 0)
+{
+    <p class="empty">У вас нет квартир. <a href="/add-apartment">Добавьте первую!</a></p>
+}
+else
+{
+    @foreach (var apt in apartments)
+    {
+        <div class="owner-apartment-card">
+            <div>
+                <strong>@apt.Title</strong> — @apt.City, @apt.Address
+                <br />
+                <span>@apt.PricePerNight Br/ночь · @apt.Rooms комн.</span>
+            </div>
+            <div class="card-actions">
+                <button @onclick="() => ShowBookings(apt.Id)" class="btn-secondary">
+                    📅 Бронирования
+                </button>
+                <a href="/edit-apartment/@apt.Id" class="btn-secondary"
+                   style="text-decoration:none; display:inline-flex; align-items:center;">
+                    ✏️ Редактировать
+                </a>
+                <button @onclick="() => Delete(apt.Id)" class="btn-danger">
+                    Удалить
+                </button>
+            </div>
+
+            @if (selectedApartmentId == apt.Id)
+            {
+                <div class="bookings-list">
+                    <h4>Бронирования квартиры</h4>
+                    @if (apartmentBookings.Count == 0)
+                    {
+                        <p>Нет бронирований</p>
+                    }
+                    else
+                    {
+                        @foreach (var b in apartmentBookings)
+                        {
+                            <div class="booking-item">
+                                <span>👤 @b.TenantName</span>
+                                <span>📅 @b.CheckIn.ToShortDateString() — @b.CheckOut.ToShortDateString()</span>
+                                <span>💰 @b.TotalPrice Br</span>
+                                <span class="status-badge">@b.Status</span>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<ApartmentDto> apartments = new();
+    private List<BookingDto> apartmentBookings = new();
+    private int? selectedApartmentId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsLoggedIn) { Nav.NavigateTo("/login"); return; }
+        apartments = await Api.GetMyApartmentsAsync();
+    }
+
+    private async Task ShowBookings(int aptId)
+    {
+        if (selectedApartmentId == aptId) { selectedApartmentId = null; return; }
+        selectedApartmentId = aptId;
+        apartmentBookings = await Api.GetApartmentBookingsAsync(aptId);
+    }
+
+    private async Task Delete(int id)
+    {
+        await Api.DeleteApartmentAsync(id);
+        apartments = await Api.GetMyApartmentsAsync();
+    }
+}

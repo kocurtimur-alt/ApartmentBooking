@@ -1,0 +1,300 @@
+﻿@page "/help"
+
+<div class="help-page">
+
+    <div class="help-header">
+        <h1>Справочная система ApartRent</h1>
+        <p class="help-subtitle">Руководство пользователя по работе с системой бронирования квартир</p>
+    </div>
+
+    <div class="help-nav">
+        <a href="#overview">О системе</a>
+        <a href="#registration">Регистрация и вход</a>
+        <a href="#search">Поиск квартир</a>
+        <a href="#booking">Бронирование</a>
+        <a href="#owner">Арендодателям</a>
+        <a href="#contacts">Контакты</a>
+    </div>
+
+    <div class="help-content">
+
+        <!-- О системе -->
+        <section class="help-section" id="overview">
+            <h2>О системе</h2>
+            <p>
+                ApartRent — веб-система для поиска и бронирования квартир посуточно.
+                Платформа позволяет арендаторам находить подходящее жильё и бронировать его онлайн,
+                а арендодателям — размещать объявления и управлять бронированиями.
+            </p>
+            <div class="help-cards">
+                <div class="help-card">
+                    <div class="help-card-icon">🔍</div>
+                    <h4>Поиск</h4>
+                    <p>Ищите квартиры по городу, цене и количеству комнат</p>
+                </div>
+                <div class="help-card">
+                    <div class="help-card-icon">📅</div>
+                    <h4>Бронирование</h4>
+                    <p>Бронируйте квартиры на нужные даты в несколько кликов</p>
+                </div>
+                <div class="help-card">
+                    <div class="help-card-icon">🏢</div>
+                    <h4>Размещение</h4>
+                    <p>Добавляйте свои квартиры и управляйте бронированиями</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Регистрация -->
+        <section class="help-section" id="registration">
+            <h2>Регистрация и вход в систему</h2>
+
+            <h3>Как зарегистрироваться</h3>
+            <p>Для работы с системой необходимо создать аккаунт. Нажмите кнопку регистрации в правом верхнем углу страницы:</p>
+            <div class="help-ui-example">
+                <div class="help-navbar-example">
+                    <span class="help-brand-ex">ApartRent</span>
+                    <div class="help-nav-btns">
+                        <span class="help-link-ex">Поиск</span>
+                        <span class="help-link-ex">Войти</span>
+                        <span class="help-btn-ex">Регистрация</span>
+                    </div>
+                </div>
+                <p class="help-ui-caption">Навигационная панель для неавторизованного пользователя</p>
+            </div>
+
+            <p>Заполните форму регистрации:</p>
+            <div class="help-ui-example">
+                <div class="help-form-example">
+                    <div class="help-form-field">
+                        <label>Имя</label>
+                        <div class="help-input-ex">Иван Иванов</div>
+                    </div>
+                    <div class="help-form-field">
+                        <label>Email</label>
+                        <div class="help-input-ex">ivan@example.com</div>
+                    </div>
+                    <div class="help-form-field">
+                        <label>Пароль</label>
+                        <div class="help-input-ex">••••••••</div>
+                    </div>
+                    <div class="help-btn-primary-ex">Создать аккаунт</div>
+                </div>
+                <p class="help-ui-caption">Форма регистрации нового пользователя</p>
+            </div>
+
+            <div class="help-tip">
+                <span class="help-tip-icon">💡</span>
+                <span>Пароль должен содержать не менее 6 символов. Email используется для входа в систему и должен быть уникальным.</span>
+            </div>
+
+            <h3>Как войти в аккаунт</h3>
+            <p>Если у вас уже есть аккаунт, нажмите "Войти" в навигационной панели, введите email и пароль и нажмите кнопку входа. После успешного входа в панели навигации появится ваше имя и кнопка "Выйти":</p>
+            <div class="help-ui-example">
+                <div class="help-navbar-example">
+                    <span class="help-brand-ex">ApartRent</span>
+                    <div class="help-nav-btns">
+                        <span class="help-link-ex">Поиск</span>
+                        <span class="help-link-ex">Мои квартиры</span>
+                        <span class="help-link-ex">Мои бронирования</span>
+                        <span class="help-username-ex">👤 Иван</span>
+                        <span class="help-btn-outline-ex">Выйти</span>
+                    </div>
+                </div>
+                <p class="help-ui-caption">Навигационная панель для авторизованного пользователя</p>
+            </div>
+        </section>
+
+        <!-- Поиск -->
+        <section class="help-section" id="search">
+            <h2>Поиск квартир</h2>
+            <p>Перейдите на страницу "Поиск" через навигационную панель. При загрузке страницы отображаются все доступные квартиры.</p>
+
+            <h3>Использование фильтров</h3>
+            <p>Для уточнения поиска используйте панель фильтров в верхней части страницы:</p>
+            <div class="help-ui-example">
+                <div class="help-filters-example">
+                    <div class="help-input-ex" style="flex:1">Минск</div>
+                    <div class="help-input-ex" style="width:100px">100</div>
+                    <div class="help-input-ex" style="width:100px">500</div>
+                    <div class="help-input-ex" style="width:130px">2 комнаты</div>
+                    <div class="help-btn-primary-ex" style="white-space:nowrap">🔍 Найти</div>
+                </div>
+                <p class="help-ui-caption">Панель фильтров: город, цена от, цена до, количество комнат</p>
+            </div>
+
+            <h3>Карточка квартиры</h3>
+            <p>Каждая квартира отображается в виде карточки с основной информацией. При наличии нескольких фотографий используйте стрелки для листания:</p>
+            <div class="help-ui-example">
+                <div class="help-card-example">
+                    <div class="help-card-img">
+                        <span class="help-slider-btn-ex">❮</span>
+                        🏢
+                        <span class="help-slider-btn-ex">❯</span>
+                        <span class="help-counter-ex">1 / 3</span>
+                    </div>
+                    <div class="help-card-info">
+                        <div class="help-card-title-ex">Уютная студия в центре</div>
+                        <div class="help-card-loc-ex">📍 Минск, ул. Ленина, 5</div>
+                        <div class="help-card-meta-ex">
+                            <span>🛏 1 комн.</span>
+                            <span>👥 до 2 чел.</span>
+                        </div>
+                        <div class="help-card-footer-ex">
+                            <span class="help-price-ex">150 Br/ночь</span>
+                            <span class="help-btn-primary-ex">Подробнее</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="help-ui-caption">Карточка квартиры со слайдером фотографий</p>
+            </div>
+
+            <div class="help-tip">
+                <span class="help-tip-icon">💡</span>
+                <span>Нажмите на карточку или кнопку "Подробнее" для просмотра полной информации о квартире и формы бронирования.</span>
+            </div>
+        </section>
+
+        <!-- Бронирование -->
+        <section class="help-section" id="booking">
+            <h2>Бронирование квартиры</h2>
+            <p>Для бронирования необходимо быть авторизованным. Откройте страницу квартиры и заполните форму бронирования в правой части экрана:</p>
+
+            <div class="help-ui-example">
+                <div class="help-form-example">
+                    <h4 style="margin-bottom:.5rem">Забронировать</h4>
+                    <div class="help-form-field">
+                        <label>Дата заезда:</label>
+                        <div class="help-input-ex">01.08.2025</div>
+                    </div>
+                    <div class="help-form-field">
+                        <label>Дата выезда:</label>
+                        <div class="help-input-ex">03.08.2025</div>
+                    </div>
+                    <div class="help-total-ex">Итого: 300 Br за 2 ночей</div>
+                    <div class="help-btn-primary-ex">Забронировать</div>
+                </div>
+                <p class="help-ui-caption">Форма бронирования с автоматическим расчётом стоимости</p>
+            </div>
+
+            <h3>Просмотр своих бронирований</h3>
+            <p>Все ваши бронирования доступны на странице "Мои бронирования". Для каждого бронирования отображается название квартиры, адрес, даты и итоговая стоимость:</p>
+
+            <div class="help-ui-example">
+                <div class="help-booking-example">
+                    <div class="help-booking-title-ex">Уютная студия в центре</div>
+                    <div class="help-booking-info-ex">📍 Минск, ул. Ленина, 5</div>
+                    <div class="help-booking-info-ex">📅 Заезд: <b>01.08.2025</b> — Выезд: <b>03.08.2025</b></div>
+                    <div class="help-booking-info-ex">💰 Итого: <b>300 Br</b></div>
+                    <div style="display:flex;gap:.7rem;align-items:center;margin-top:.5rem">
+                        <span class="help-status-ex">Confirmed</span>
+                        <span class="help-btn-danger-ex">Отменить</span>
+                    </div>
+                </div>
+                <p class="help-ui-caption">Карточка бронирования с кнопкой отмены</p>
+            </div>
+
+            <div class="help-tip">
+                <span class="help-tip-icon">⚠️</span>
+                <span>Вы не можете забронировать собственную квартиру. Если выбранные даты уже заняты другим арендатором, система отобразит сообщение об ошибке.</span>
+            </div>
+        </section>
+
+        <!-- Арендодателям -->
+        <section class="help-section" id="owner">
+            <h2>Руководство для арендодателей</h2>
+
+            <h3>Добавление квартиры</h3>
+            <p>Перейдите в раздел "Мои квартиры" и нажмите кнопку "+ Добавить квартиру". Заполните все обязательные поля формы:</p>
+
+            <div class="help-ui-example">
+                <div class="help-form-example">
+                    <div class="help-form-field">
+                        <label>Название объявления *</label>
+                        <div class="help-input-ex">Уютная студия в центре</div>
+                    </div>
+                    <div class="help-form-field">
+                        <label>Стоимость за сутки (Br) *</label>
+                        <div class="help-input-ex">150</div>
+                    </div>
+                    <div class="help-form-field">
+                        <label>Фотографии</label>
+                        <div class="help-photos-example">
+                            <div class="help-photo-row">
+                                <div class="help-input-ex" style="flex:1">https://example.com/photo1.jpg</div>
+                                <div class="help-photo-preview">🖼</div>
+                                <span class="help-btn-danger-ex">✕</span>
+                            </div>
+                            <div class="help-photo-row">
+                                <div class="help-input-ex" style="flex:1">https://example.com/photo2.jpg</div>
+                                <div class="help-photo-preview">🖼</div>
+                                <span class="help-btn-danger-ex">✕</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="help-btn-secondary-ex">+ Добавить фото</span>
+                </div>
+                <p class="help-ui-caption">Форма добавления квартиры с несколькими фотографиями</p>
+            </div>
+
+            <div class="help-tip">
+                <span class="help-tip-icon">💡</span>
+                <span>Вы можете добавить несколько фотографий, вставив прямые ссылки на изображения. После вставки ссылки появится предпросмотр фотографии.</span>
+            </div>
+
+            <h3>Просмотр бронирований квартиры</h3>
+            <p>На странице "Мои квартиры" нажмите кнопку "📅 Бронирования" напротив нужной квартиры — под карточкой раскроется список всех бронирований с именами арендаторов и датами:</p>
+
+            <div class="help-ui-example">
+                <div class="help-booking-example">
+                    <div style="font-weight:600;margin-bottom:.5rem">Бронирования квартиры</div>
+                    <div class="help-booking-item-ex">
+                        <span>👤 Иван Иванов</span>
+                        <span>📅 01.08.2025 — 03.08.2025</span>
+                        <span>💰 300 Br</span>
+                        <span class="help-status-ex">Confirmed</span>
+                    </div>
+                    <div class="help-booking-item-ex">
+                        <span>👤 Мария Петрова</span>
+                        <span>📅 10.08.2025 — 15.08.2025</span>
+                        <span>💰 750 Br</span>
+                        <span class="help-status-ex">Confirmed</span>
+                    </div>
+                </div>
+                <p class="help-ui-caption">Список бронирований квартиры для арендодателя</p>
+            </div>
+
+            <h3>Редактирование и удаление квартиры</h3>
+            <p>На странице "Мои квартиры" для каждого объявления доступны три действия:</p>
+            <div class="help-ui-example">
+                <div style="display:flex;gap:.8rem;padding:.5rem">
+                    <span class="help-btn-secondary-ex">📅 Бронирования</span>
+                    <span class="help-btn-secondary-ex">✏️ Редактировать</span>
+                    <span class="help-btn-danger-ex">Удалить</span>
+                </div>
+                <p class="help-ui-caption">Кнопки управления квартирой</p>
+            </div>
+        </section>
+
+        <!-- Контакты -->
+        <section class="help-section" id="contacts">
+            <h2>Контакты и версия</h2>
+            <p>По вопросам работы системы обращайтесь к разработчику:</p>
+            <div class="help-contacts">
+                <div class="help-contact-item">
+                    <span class="help-contact-icon">✉️</span>
+                    <span>support@apartrent.by</span>
+                </div>
+                <div class="help-contact-item">
+                    <span class="help-contact-icon">📱</span>
+                    <span>+375 (29) 000-00-00</span>
+                </div>
+                <div class="help-contact-item">
+                    <span class="help-contact-icon">📋</span>
+                    <span>Версия системы: 1.0 (2025)</span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

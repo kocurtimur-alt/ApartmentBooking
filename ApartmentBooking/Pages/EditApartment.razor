@@ -1,0 +1,162 @@
+﻿@page "/edit-apartment/{Id:int}"
+@inject ApiService Api
+@inject AuthService Auth
+@inject NavigationManager Nav
+@using ApartmentBooking.Services
+
+@if (!loaded)
+{
+    <p class="loading">Загрузка...</p>
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <p class="error">⚠️ @error</p>
+    }
+}
+else
+{
+    <div class="form-page">
+        <h2>Редактировать квартиру</h2>
+
+        <label class="form-label">Название *</label>
+        <input @bind="title" class="input" />
+
+        <label class="form-label">Город *</label>
+        <input @bind="city" class="input" />
+
+        <label class="form-label">Адрес *</label>
+        <input @bind="address" class="input" />
+
+        <label class="form-label">Описание</label>
+        <textarea @bind="description" class="input textarea"></textarea>
+
+        <label class="form-label">Стоимость за сутки (Br) *</label>
+        <input @bind="pricePerNight" type="number" min="0" class="input" />
+
+        <label class="form-label">Количество комнат</label>
+        <input @bind="rooms" type="number" min="1" max="20" class="input" />
+
+        <label class="form-label">Максимальное количество гостей</label>
+        <input @bind="maxGuests" type="number" min="1" max="30" class="input" />
+
+        <label class="form-label">Фотографии</label>
+        @for (int i = 0; i < imageUrls.Count; i++)
+        {
+            var index = i;
+            <div class="image-input-row">
+                <input value="@imageUrls[index]"
+                       @oninput="@(e => imageUrls[index] = e.Value?.ToString() ?? string.Empty)"
+                       placeholder="https://... ссылка на фото"
+                       class="input" />
+                @if (!string.IsNullOrEmpty(imageUrls[index]))
+                {
+                    <img src="@imageUrls[index]" class="image-preview"
+                         onerror="this.style.display='none'" />
+                }
+                <button type="button" @onclick="() => RemoveImage(index)" class="btn-danger btn-small">✕</button>
+            </div>
+        }
+        <button type="button" @onclick="AddImageField" class="btn-secondary btn-small">
+            + Добавить фото
+        </button>
+
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <p class="error">⚠️ @error</p>
+        }
+
+        <div style="display:flex; gap:1rem;">
+            <button @onclick="Save" class="btn-primary" disabled="@loading">
+                @(loading ? "Сохранение..." : "Сохранить изменения")
+            </button>
+            <button @onclick="Cancel" class="btn-secondary">Отмена</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private string title = "", city = "", address = "", description = "";
+    private decimal pricePerNight;
+    private int rooms = 1, maxGuests = 2;
+    private List<string> imageUrls = new() { "" };
+    private string error = "";
+    private bool loading = false;
+    private bool loaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Ждём пока AuthService полностью инициализируется
+        await Auth.InitAsync();
+
+        if (!Auth.IsLoggedIn) { Nav.NavigateTo("/login"); return; }
+
+        var apt = await Api.GetApartmentAsync(Id);
+        if (apt == null)
+        {
+            Nav.NavigateTo("/my-apartments");
+            return;
+        }
+
+        // Отладка — убери после проверки
+        if (apt.OwnerId != Auth.UserId)
+        {
+            error = $"OwnerId={apt.OwnerId}, UserId={Auth.UserId}";
+            loaded = true;
+            return;
+        }
+
+        title = apt.Title;
+        city = apt.City;
+        address = apt.Address;
+        description = apt.Description;
+        pricePerNight = apt.PricePerNight;
+        rooms = apt.Rooms;
+        maxGuests = apt.MaxGuests;
+        imageUrls = apt.Images.Count > 0
+            ? new List<string>(apt.Images)
+            : new List<string> { "" };
+        loaded = true;
+    }
+
+    private void AddImageField() => imageUrls.Add("");
+    private void RemoveImage(int index)
+    {
+        if (imageUrls.Count > 1) imageUrls.RemoveAt(index);
+        else imageUrls[0] = "";
+    }
+
+    private async Task Save()
+    {
+        error = "";
+        if (string.IsNullOrWhiteSpace(title)) { error = "Введите название"; return; }
+        if (string.IsNullOrWhiteSpace(city)) { error = "Введите город"; return; }
+        if (string.IsNullOrWhiteSpace(address)) { error = "Введите адрес"; return; }
+        if (pricePerNight <= 0) { error = "Укажите стоимость"; return; }
+
+        var images = imageUrls.Where(u => !string.IsNullOrWhiteSpace(u)).ToList();
+
+        loading = true;
+        try
+        {
+            var ok = await Api.UpdateApartmentAsync(Id, new
+            {
+                title = title.Trim(),
+                description = description.Trim(),
+                address = address.Trim(),
+                city = city.Trim(),
+                pricePerNight,
+                rooms,
+                maxGuests,
+                images
+            });
+
+            if (ok) Nav.NavigateTo("/my-apartments");
+            else error = "Ошибка при сохранении";
+        }
+        catch { error = "Ошибка соединения с сервером"; }
+        finally { loading = false; }
+    }
+
+    private void Cancel() => Nav.NavigateTo("/my-apartments");
+}

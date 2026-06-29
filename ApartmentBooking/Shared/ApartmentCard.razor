@@ -1,0 +1,61 @@
+﻿@inject NavigationManager Nav
+@using ApartmentBooking.Models
+
+<div class="apartment-card">
+    <div class="card-image" @onclick="GoToDetail">
+        @if (Apartment.Images.Count > 0)
+        {
+            <img src="@Apartment.Images[currentImage]" alt="@Apartment.Title"
+                 onerror="this.src=''" style="width:100%;height:200px;object-fit:cover;" />
+
+            @if (Apartment.Images.Count > 1)
+            {
+                <div class="image-nav" @onclick:stopPropagation="true">
+                    <button class="prev" @onclick="PrevImage">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="white" stroke-width="3">
+                            <polyline points="15,18 9,12 15,6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="next" @onclick="NextImage">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="white" stroke-width="3">
+                            <polyline points="9,18 15,12 9,6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <span class="image-nav-counter">
+                    @(currentImage + 1) / @Apartment.Images.Count
+                </span>
+            }
+        }
+        else
+        {
+            <div class="no-image">🏢</div>
+        }
+    </div>
+    <div class="card-body" @onclick="GoToDetail">
+        <h3 class="card-title">@Apartment.Title</h3>
+        <p class="card-location">📍 @Apartment.City, @Apartment.Address</p>
+        <p class="card-desc">@TruncateDesc(Apartment.Description)</p>
+        <div class="card-meta">
+            <span>🛏 @Apartment.Rooms комн.</span>
+            <span>👥 до @Apartment.MaxGuests чел.</span>
+        </div>
+        <div class="card-footer">
+            <span class="card-price">@Apartment.PricePerNight Br/ночь</span>
+            <button class="btn-primary">Подробнее</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public ApartmentDto Apartment { get; set; } = null!;
+    private int currentImage = 0;
+
+    private void GoToDetail() => Nav.NavigateTo($"/apartment/{Apartment.Id}");
+    private void PrevImage() =>
+        currentImage = currentImage == 0 ? Apartment.Images.Count - 1 : currentImage - 1;
+    private void NextImage() =>
+        currentImage = (currentImage + 1) % Apartment.Images.Count;
+    private string TruncateDesc(string desc) =>
+        desc.Length > 80 ? desc[..80] + "..." : desc;
+}

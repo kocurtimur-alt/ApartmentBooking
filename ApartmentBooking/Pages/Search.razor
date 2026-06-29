@@ -1,0 +1,63 @@
+﻿@page "/search"
+@inject ApiService Api
+@using ApartmentBooking.Services
+@using ApartmentBooking.Models
+
+<h1 class="page-title">Поиск квартир</h1>
+
+<div class="search-filters">
+    <input @bind="city" placeholder="Город" class="input" />
+    <input @bind="minPrice" type="number" placeholder="Цена от (Br)" class="input" />
+    <input @bind="maxPrice" type="number" placeholder="Цена до (Br)" class="input" />
+    <select @bind="rooms" class="input">
+        <option value="">Любое кол-во комнат</option>
+        <option value="1">1 комната</option>
+        <option value="2">2 комнаты</option>
+        <option value="3">3 комнаты</option>
+        <option value="4">4+ комнаты</option>
+    </select>
+    <button @onclick="OnInitializedAsync" class="btn-primary">🔍 Найти</button>
+</div>
+
+@if (loading)
+{
+    <p class="loading">Загрузка...</p>
+}
+else if (apartments.Count == 0)
+{
+    <p class="empty">Квартиры не найдены. Попробуйте изменить фильтры.</p>
+}
+else
+{
+    <p class="results-count">Найдено: @apartments.Count</p>
+    <div class="apartments-grid">
+        @foreach (var apt in apartments)
+        {
+            <ApartmentCard Apartment="apt" />
+        }
+    </div>
+}
+
+@code {
+    private string? city;
+    private decimal? minPrice;
+    private decimal? maxPrice;
+    private int? rooms;
+    private List<ApartmentDto> apartments = new();
+    private bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+=> await PerformSearch();
+
+    private async Task PerformSearch()
+    {
+        loading = true;
+        apartments = await Api.SearchApartmentsAsync(
+            city,
+            minPrice,
+            maxPrice,
+            rooms);
+
+        loading = false;
+    }
+}

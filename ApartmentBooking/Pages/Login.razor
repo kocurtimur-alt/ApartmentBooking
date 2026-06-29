@@ -1,0 +1,49 @@
+﻿@page "/login"
+@inject AuthService Auth
+@inject NavigationManager Nav
+@using ApartmentBooking.Services
+
+<div class="auth-page">
+    <div class="auth-card">
+        <h2>Вход</h2>
+        <label class="form-label">Email</label>
+        <input @bind="email" placeholder="example@mail.com" type="email" class="input" />
+        <label class="form-label">Пароль</label>
+        <input @bind="password" placeholder="Ваш пароль" type="password" class="input" />
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <p class="error">⚠️ @error</p>
+        }
+        <button @onclick="LoginUser" class="btn-primary" disabled="@loading">
+            @(loading ? "Вход..." : "Войти")
+        </button>
+        <p style="text-align:center">
+            Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+        </p>
+    </div>
+</div>
+
+@code {
+    private string email = "", password = "", error = "";
+    private bool loading = false;
+
+    private async Task LoginUser()
+    {
+        error = "";
+        loading = true;
+        try
+        {
+            var ok = await Auth.LoginAsync(email, password);
+            if (ok) Nav.NavigateTo("/");
+            else error = "Неверный email или пароль";
+        }
+        catch
+        {
+            error = "Ошибка соединения с сервером";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

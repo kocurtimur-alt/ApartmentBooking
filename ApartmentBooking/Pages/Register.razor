@@ -1,0 +1,55 @@
+﻿@page "/register"
+@inject AuthService Auth
+@inject NavigationManager Nav
+@using ApartmentBooking.Services
+
+<div class="auth-page">
+    <div class="auth-card">
+        <h2>Регистрация</h2>
+        <label class="form-label">Имя</label>
+        <input @bind="name" placeholder="Ваше имя" class="input" />
+        <label class="form-label">Email</label>
+        <input @bind="email" placeholder="example@mail.com" type="email" class="input" />
+        <label class="form-label">Пароль</label>
+        <input @bind="password" placeholder="Минимум 6 символов" type="password" class="input" />
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <p class="error">⚠️ @error</p>
+        }
+        <button @onclick="RegisterUser" class="btn-primary" disabled="@loading">
+            @(loading ? "Создание аккаунта..." : "Создать аккаунт")
+        </button>
+        <p style="text-align:center">
+            Уже есть аккаунт? <a href="/login">Войти</a>
+        </p>
+    </div>
+</div>
+
+@code {
+    private string name = "", email = "", password = "", error = "";
+    private bool loading = false;
+
+    private async Task RegisterUser()
+    {
+        error = "";
+        if (string.IsNullOrWhiteSpace(name)) { error = "Введите имя"; return; }
+        if (string.IsNullOrWhiteSpace(email)) { error = "Введите email"; return; }
+        if (password.Length < 6) { error = "Пароль должен быть не менее 6 символов"; return; }
+
+        loading = true;
+        try
+        {
+            var ok = await Auth.RegisterAsync(name.Trim(), email.Trim(), password);
+            if (ok) Nav.NavigateTo("/");
+            else error = "Пользователь с таким email уже существует";
+        }
+        catch
+        {
+            error = "Ошибка соединения с сервером";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

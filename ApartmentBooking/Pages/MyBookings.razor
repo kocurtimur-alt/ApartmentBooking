@@ -1,0 +1,46 @@
+﻿@page "/my-bookings"
+@inject ApiService Api
+@inject AuthService Auth
+@inject NavigationManager Nav
+@using ApartmentBooking.Services
+@using ApartmentBooking.Models
+
+<h2>Мои бронирования</h2>
+
+@if (bookings.Count == 0)
+{
+    <p class="empty">У вас нет бронирований. <a href="/search">Найти квартиру</a></p>
+}
+else
+{
+    @foreach (var b in bookings)
+    {
+        <div class="booking-card @b.Status.ToLower()">
+            <h3>@b.ApartmentTitle</h3>
+            <p>📍 @b.ApartmentAddress</p>
+            <p>📅 Заезд: <strong>@b.CheckIn.ToShortDateString()</strong> — Выезд: <strong>@b.CheckOut.ToShortDateString()</strong></p>
+            <p>💰 Итого: <strong>@b.TotalPrice Br</strong></p>
+            <span class="status-badge">@b.Status</span>
+            @if (b.Status == "Confirmed")
+            {
+                <button @onclick="() => Cancel(b.Id)" class="btn-danger">Отменить</button>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<BookingDto> bookings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsLoggedIn) { Nav.NavigateTo("/login"); return; }
+        bookings = await Api.GetMyBookingsAsync();
+    }
+
+    private async Task Cancel(int id)
+    {
+        await Api.CancelBookingAsync(id);
+        bookings = await Api.GetMyBookingsAsync();
+    }
+}

@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Components.Routing
+@using ApartmentBooking.Shared
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p style="text-align:center;margin-top:3rem;">
+                Страница не найдена. <a href="/">На главную</a>
+            </p>
+        </LayoutView>
+    </NotFound>
+</Router>

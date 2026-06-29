@@ -1,0 +1,129 @@
+﻿@page "/add-apartment"
+@inject ApiService Api
+@inject AuthService Auth
+@inject NavigationManager Nav
+@using ApartmentBooking.Services
+
+@if (!Auth.IsLoggedIn)
+{
+    Nav.NavigateTo("/login");
+    return;
+}
+
+<div class="form-page">
+    <h2>Добавить квартиру</h2>
+
+    <label class="form-label">Название объявления *</label>
+    <input @bind="title" placeholder="Например: Уютная студия в центре" class="input" />
+
+    <label class="form-label">Город *</label>
+    <input @bind="city" placeholder="Например: Минск" class="input" />
+
+    <label class="form-label">Адрес *</label>
+    <input @bind="address" placeholder="Например: ул. Ленина, д. 5, кв. 12" class="input" />
+
+    <label class="form-label">Описание</label>
+    <textarea @bind="description" placeholder="Расскажите о квартире: ремонт, мебель, техника, район..." class="input textarea"></textarea>
+
+    <label class="form-label">Стоимость за сутки (Br) *</label>
+    <input @bind="pricePerNight" type="number" min="0" placeholder="Например: 50" class="input" />
+
+    <label class="form-label">Количество комнат</label>
+    <input @bind="rooms" type="number" min="1" max="20" placeholder="Например: 2" class="input" />
+
+    <label class="form-label">Максимальное количество гостей</label>
+    <input @bind="maxGuests" type="number" min="1" max="30" placeholder="Например: 4" class="input" />
+
+    <label class="form-label">Фотографии (ссылки на фото)</label>
+    @for (int i = 0; i < imageUrls.Count; i++)
+    {
+        var index = i;
+        <div class="image-input-row">
+            <input value="@imageUrls[index]"
+                   @oninput="@(e => imageUrls[index] = e.Value?.ToString() ?? string.Empty)"
+                   placeholder="https://... ссылка на фото"
+                   class="input" />
+            @if (!string.IsNullOrEmpty(imageUrls[index]))
+            {
+                <img src="@imageUrls[index]" class="image-preview"
+                     onerror="this.style.display='none'" />
+            }
+            <button type="button" @onclick="() => RemoveImage(index)"
+                    class="btn-danger btn-small">
+                ✕
+            </button>
+        </div>
+    }
+    <button type="button" @onclick="AddImageField" class="btn-secondary btn-small">
+        + Добавить фото
+    </button>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <p class="error">⚠️ @error</p>
+    }
+
+    <button @onclick="Add" class="btn-primary" disabled="@loading">
+        @(loading ? "Сохранение..." : "Добавить квартиру")
+    </button>
+</div>
+
+@code {
+    private string title = "", city = "", address = "", description = "";
+    private decimal pricePerNight;
+    private int rooms = 1, maxGuests = 2;
+    private List<string> imageUrls = new() { "" };
+    private string error = "";
+    private bool loading = false;
+
+    private void AddImageField()
+    {
+        imageUrls.Add("");
+        StateHasChanged();
+    }
+
+    private void RemoveImage(int index)
+    {
+        if (imageUrls.Count > 1) imageUrls.RemoveAt(index);
+        else imageUrls[0] = "";
+        StateHasChanged();
+    }
+
+    private async Task Add()
+    {
+        error = "";
+        if (string.IsNullOrWhiteSpace(title)) { error = "Введите название"; return; }
+        if (string.IsNullOrWhiteSpace(city)) { error = "Введите город"; return; }
+        if (string.IsNullOrWhiteSpace(address)) { error = "Введите адрес"; return; }
+        if (pricePerNight <= 0) { error = "Укажите стоимость за сутки"; return; }
+
+        var images = imageUrls
+            .Where(u => !string.IsNullOrWhiteSpace(u))
+            .Select(u => u.Trim())
+            .ToList();
+
+        loading = true;
+        try
+        {
+            var ok = await Api.CreateApartmentAsync(new
+            {
+                title = title.Trim(),
+                description = description.Trim(),
+                address = address.Trim(),
+                city = city.Trim(),
+                pricePerNight,
+                rooms,
+                maxGuests,
+                images
+            });
+
+            if (ok) Nav.NavigateTo("/my-apartments");
+            else error = "Ошибка при добавлении. Убедитесь что вы авторизованы.";
+        }
+        catch (Exception ex)
+        {
+            error = $"Ошибка соединения: {ex.Message}";
+        }
+        finally { loading = false; }
+    }
+}
