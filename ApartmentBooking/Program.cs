@@ -9,7 +9,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://Тapartmentbooking-production.up.railway.app")
+    BaseAddress = new Uri("https://apartmentbooking-production.up.railway.app/")
 });
 
 builder.Services.AddBlazoredLocalStorage();
