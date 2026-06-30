@@ -1010,3 +1010,173 @@ textarea.input {
 .help-contact-icon {
     font-size: 1.2rem;
 }
+/* ===== АДАПТАЦИЯ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА ===== */
+@media (max-width: 768px) {
+
+    .content {
+        padding: 1rem;
+    }
+
+    /* Навигация */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .7rem;
+        padding: 1rem;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        gap: .6rem;
+        width: 100%;
+    }
+
+        .nav-links a, .nav-links .user-name {
+            font-size: .85rem;
+        }
+
+    .btn-logout {
+        padding: .3rem .7rem;
+        font-size: .8rem;
+    }
+
+    /* Сетка квартир — одна колонка */
+    .apartments-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Фильтры поиска — вертикально */
+    .search-filters {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+        .search-filters .input {
+            width: 100%;
+        }
+
+    /* Детальная страница — одна колонка */
+    .detail-page {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .slider-img, .no-image-large {
+        height: 260px;
+    }
+
+    .slider-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .price-big {
+        font-size: 1.4rem;
+    }
+
+    .detail-meta {
+        gap: .8rem;
+        font-size: .85rem;
+    }
+
+    /* Формы */
+    .form-page, .auth-card {
+        padding: 1.2rem;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .auth-page {
+        padding-top: 1.5rem;
+    }
+
+    /* Карточки квартир арендодателя */
+    .owner-apartment-card {
+        padding: 1rem;
+    }
+
+    .card-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .card-actions a, .card-actions button {
+            text-align: center;
+        }
+
+    .booking-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .3rem;
+    }
+
+    /* Справка */
+    .help-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .help-nav {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .help-header {
+        padding: 2rem 1.2rem;
+    }
+
+        .help-header h1 {
+            font-size: 1.5rem;
+        }
+
+    .help-section {
+        padding: 1.2rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-image img, .card-image {
+        height: 160px;
+    }
+
+    .slider-img, .no-image-large {
+        height: 200px;
+    }
+
+    .help-filters-example {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* Телефон на странице квартиры */
+.phone-block {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    background: #f9f9f9;
+    padding: .8rem 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+}
+
+.phone-icon {
+    font-size: 1.2rem;
+}
+
+.phone-link {
+    color: #e94560;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+}
+
+    .phone-link:hover {
+        text-decoration: underline;
+    }

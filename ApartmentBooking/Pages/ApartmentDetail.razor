@@ -62,7 +62,12 @@ else
                 <span>👤 Хозяин: @apartment.OwnerName</span>
             </div>
             <p class="description">@apartment.Description</p>
-
+            <div class="phone-block">
+    <span class="phone-icon">📞</span>
+    <a href="tel:@apartment.PhoneNumber.Replace(" ", "").Replace("(", "").Replace(")", "")" class="phone-link">
+        @apartment.PhoneNumber
+    </a>
+</div>
             @if (Auth.IsLoggedIn && Auth.UserId != apartment.OwnerId)
             {
                 <div class="booking-form">

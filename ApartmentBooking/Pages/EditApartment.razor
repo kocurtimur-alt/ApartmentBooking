@@ -19,7 +19,14 @@ else
 
         <label class="form-label">Название *</label>
         <input @bind="title" class="input" />
-
+        <label class="form-label">Номер телефона (РБ) *</label>
+<input value="@phoneNumber"
+       @oninput="@(e => OnPhoneInput(e.Value?.ToString() ?? ""))"
+       placeholder="+375 (29) 123-45-67" class="input" maxlength="19" />
+@if (!string.IsNullOrEmpty(phoneError))
+{
+    <p class="error" style="margin-top:-.5rem">@phoneError</p>
+}
         <label class="form-label">Город *</label>
         <input @bind="city" class="input" />
 
@@ -83,7 +90,44 @@ else
     private string error = "";
     private bool loading = false;
     private bool loaded = false;
+    private string phoneNumber = "+375 (";
+private string phoneError = "";
 
+private void OnPhoneInput(string value)
+{
+    // Оставляем только цифры
+    var digits = new string(value.Where(char.IsDigit).ToArray());
+
+    // Убираем код страны 375 если он есть в начале
+    if (digits.StartsWith("375")) digits = digits[3..];
+    if (digits.Length > 9) digits = digits[..9];
+
+    phoneNumber = "+375 (";
+    if (digits.Length > 0) phoneNumber += digits[..Math.Min(2, digits.Length)];
+    if (digits.Length > 2) phoneNumber += ") " + digits[2..Math.Min(5, digits.Length)];
+    if (digits.Length > 5) phoneNumber += "-" + digits[5..Math.Min(7, digits.Length)];
+    if (digits.Length > 7) phoneNumber += "-" + digits[7..Math.Min(9, digits.Length)];
+
+    phoneError = "";
+}
+
+private bool ValidatePhone()
+{
+    var digits = new string(phoneNumber.Where(char.IsDigit).ToArray());
+    if (digits.Length != 12 || !digits.StartsWith("375"))
+    {
+        phoneError = "Введите номер полностью в формате +375 (XX) XXX-XX-XX";
+        return false;
+    }
+    var operatorCode = digits.Substring(3, 2);
+    var validCodes = new[] { "25", "29", "33", "44" };
+    if (!validCodes.Contains(operatorCode))
+    {
+        phoneError = "Неверный код оператора. Допустимы: 25, 29, 33, 44";
+        return false;
+    }
+    return true;
+}
     protected override async Task OnInitializedAsync()
     {
         // Ждём пока AuthService полностью инициализируется

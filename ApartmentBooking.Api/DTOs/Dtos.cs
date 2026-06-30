@@ -12,6 +12,7 @@ public record CreateApartmentDto(
     decimal PricePerNight,
     int Rooms,
     int MaxGuests,
+    string PhoneNumber,
     List<string> Images
 );
 
@@ -23,6 +24,7 @@ public record UpdateApartmentDto(
     decimal PricePerNight,
     int Rooms,
     int MaxGuests,
+    string PhoneNumber,
     List<string> Images
 );
 
@@ -35,6 +37,7 @@ public record ApartmentDto(
     decimal PricePerNight,
     int Rooms,
     int MaxGuests,
+    string PhoneNumber,
     List<string> Images,
     bool IsAvailable,
     string OwnerName,

@@ -18,7 +18,14 @@
 
     <label class="form-label">Город *</label>
     <input @bind="city" placeholder="Например: Минск" class="input" />
-
+    <label class="form-label">Номер телефона (РБ) *</label>
+    <input value="@phoneNumber"
+           @oninput="@(e => OnPhoneInput(e.Value?.ToString() ?? ""))"
+           placeholder="+375 (29) 123-45-67" class="input" maxlength="19" />
+    @if (!string.IsNullOrEmpty(phoneError))
+    {
+        <p class="error" style="margin-top:-.5rem">@phoneError</p>
+    }
     <label class="form-label">Адрес *</label>
     <input @bind="address" placeholder="Например: ул. Ленина, д. 5, кв. 12" class="input" />
 
@@ -75,7 +82,44 @@
     private List<string> imageUrls = new() { "" };
     private string error = "";
     private bool loading = false;
+    private string phoneNumber = "+375 (";
+    private string phoneError = "";
 
+    private void OnPhoneInput(string value)
+    {
+        // Оставляем только цифры
+        var digits = new string(value.Where(char.IsDigit).ToArray());
+
+        // Убираем код страны 375 если он есть в начале
+        if (digits.StartsWith("375")) digits = digits[3..];
+        if (digits.Length > 9) digits = digits[..9];
+
+        phoneNumber = "+375 (";
+        if (digits.Length > 0) phoneNumber += digits[..Math.Min(2, digits.Length)];
+        if (digits.Length > 2) phoneNumber += ") " + digits[2..Math.Min(5, digits.Length)];
+        if (digits.Length > 5) phoneNumber += "-" + digits[5..Math.Min(7, digits.Length)];
+        if (digits.Length > 7) phoneNumber += "-" + digits[7..Math.Min(9, digits.Length)];
+
+        phoneError = "";
+    }
+
+    private bool ValidatePhone()
+    {
+        var digits = new string(phoneNumber.Where(char.IsDigit).ToArray());
+        if (digits.Length != 12 || !digits.StartsWith("375"))
+        {
+            phoneError = "Введите номер полностью в формате +375 (XX) XXX-XX-XX";
+            return false;
+        }
+        var operatorCode = digits.Substring(3, 2);
+        var validCodes = new[] { "25", "29", "33", "44" };
+        if (!validCodes.Contains(operatorCode))
+        {
+            phoneError = "Неверный код оператора. Допустимы: 25, 29, 33, 44";
+            return false;
+        }
+        return true;
+    }
     private void AddImageField()
     {
         imageUrls.Add("");
@@ -96,11 +140,9 @@
         if (string.IsNullOrWhiteSpace(city)) { error = "Введите город"; return; }
         if (string.IsNullOrWhiteSpace(address)) { error = "Введите адрес"; return; }
         if (pricePerNight <= 0) { error = "Укажите стоимость за сутки"; return; }
+        if (!ValidatePhone()) return;
 
-        var images = imageUrls
-            .Where(u => !string.IsNullOrWhiteSpace(u))
-            .Select(u => u.Trim())
-            .ToList();
+        var images = imageUrls.Where(u => !string.IsNullOrWhiteSpace(u)).Select(u => u.Trim()).ToList();
 
         loading = true;
         try
@@ -114,16 +156,14 @@
                 pricePerNight,
                 rooms,
                 maxGuests,
+                phoneNumber,
                 images
             });
 
             if (ok) Nav.NavigateTo("/my-apartments");
-            else error = "Ошибка при добавлении. Убедитесь что вы авторизованы.";
+            else error = "Ошибка при добавлении.";
         }
-        catch (Exception ex)
-        {
-            error = $"Ошибка соединения: {ex.Message}";
-        }
+        catch { error = "Ошибка соединения с сервером"; }
         finally { loading = false; }
     }
 }

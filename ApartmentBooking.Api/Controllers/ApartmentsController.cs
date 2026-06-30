@@ -36,28 +36,21 @@ public class ApartmentsController : ControllerBase
     [FromQuery] decimal? maxPrice,
     [FromQuery] int? rooms)
     {
-        // Загружаем всё в память, потом фильтруем на стороне C#
-        var query = _db.Apartments
-            .Include(a => a.Owner)
-            .Where(a => a.IsAvailable);
+        var query = _db.Apartments.Include(a => a.Owner).Where(a => a.IsAvailable);
 
-        if (minPrice.HasValue)
-            query = query.Where(a => a.PricePerNight >= minPrice);
-        if (maxPrice.HasValue)
-            query = query.Where(a => a.PricePerNight <= maxPrice);
-        if (rooms.HasValue)
-            query = query.Where(a => a.Rooms == rooms);
+        if (minPrice.HasValue) query = query.Where(a => a.PricePerNight >= minPrice);
+        if (maxPrice.HasValue) query = query.Where(a => a.PricePerNight <= maxPrice);
+        if (rooms.HasValue) query = query.Where(a => a.Rooms == rooms);
 
         var apartments = await query.ToListAsync();
 
-        // Фильтрация по городу на стороне C# — корректно работает с кириллицей
         if (!string.IsNullOrEmpty(city))
             apartments = apartments.Where(a =>
                 a.City.Contains(city, StringComparison.OrdinalIgnoreCase)).ToList();
 
         return Ok(apartments.Select(a => new ApartmentDto(
             a.Id, a.Title, a.Description, a.Address, a.City,
-            a.PricePerNight, a.Rooms, a.MaxGuests,
+            a.PricePerNight, a.Rooms, a.MaxGuests, a.PhoneNumber,
             ParseImages(a.Images), a.IsAvailable, a.Owner!.Name, a.OwnerId)));
     }
 
@@ -69,7 +62,7 @@ public class ApartmentsController : ControllerBase
         if (a == null) return NotFound();
 
         return Ok(new ApartmentDto(a.Id, a.Title, a.Description, a.Address,
-            a.City, a.PricePerNight, a.Rooms, a.MaxGuests,
+            a.City, a.PricePerNight, a.Rooms, a.MaxGuests, a.PhoneNumber,
             ParseImages(a.Images), a.IsAvailable, a.Owner!.Name, a.OwnerId));
     }
 
@@ -85,7 +78,7 @@ public class ApartmentsController : ControllerBase
 
         return Ok(apartments.Select(a => new ApartmentDto(
             a.Id, a.Title, a.Description, a.Address, a.City,
-            a.PricePerNight, a.Rooms, a.MaxGuests,
+            a.PricePerNight, a.Rooms, a.MaxGuests, a.PhoneNumber,
             ParseImages(a.Images), a.IsAvailable, a.Owner!.Name, a.OwnerId)));
     }
 
@@ -103,6 +96,7 @@ public class ApartmentsController : ControllerBase
             PricePerNight = dto.PricePerNight,
             Rooms = dto.Rooms,
             MaxGuests = dto.MaxGuests,
+            PhoneNumber = dto.PhoneNumber,
             Images = SerializeImages(dto.Images),
             OwnerId = userId
         };
@@ -114,7 +108,7 @@ public class ApartmentsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = apartment.Id },
             new ApartmentDto(apartment.Id, apartment.Title, apartment.Description,
                 apartment.Address, apartment.City, apartment.PricePerNight,
-                apartment.Rooms, apartment.MaxGuests, dto.Images,
+                apartment.Rooms, apartment.MaxGuests, apartment.PhoneNumber, dto.Images,
                 apartment.IsAvailable, owner!.Name, userId));
     }
 
@@ -134,13 +128,14 @@ public class ApartmentsController : ControllerBase
         apartment.PricePerNight = dto.PricePerNight;
         apartment.Rooms = dto.Rooms;
         apartment.MaxGuests = dto.MaxGuests;
+        apartment.PhoneNumber = dto.PhoneNumber;
         apartment.Images = SerializeImages(dto.Images);
 
         await _db.SaveChangesAsync();
 
         return Ok(new ApartmentDto(apartment.Id, apartment.Title, apartment.Description,
             apartment.Address, apartment.City, apartment.PricePerNight,
-            apartment.Rooms, apartment.MaxGuests, dto.Images,
+            apartment.Rooms, apartment.MaxGuests, apartment.PhoneNumber, dto.Images,
             apartment.IsAvailable, apartment.Owner!.Name, apartment.OwnerId));
     }
 

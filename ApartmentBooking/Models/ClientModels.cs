@@ -10,6 +10,7 @@ public class ApartmentDto
     public decimal PricePerNight { get; set; }
     public int Rooms { get; set; }
     public int MaxGuests { get; set; }
+    public string PhoneNumber { get; set; } = "";
     public List<string> Images { get; set; } = new();
     public bool IsAvailable { get; set; }
     public string OwnerName { get; set; } = "";
